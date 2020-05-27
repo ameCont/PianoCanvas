@@ -54,8 +54,77 @@
                     }
                 }
 
-                playButton = 
-            })
+                playButton = document.createElement("button");
+                playButton.innerHTML = "Lettre a Elise";
+                playButton.style.display = "block";
+                playButton.onClick = function() {
+                    clearTimeout(eliseTimeout);
+                    elisePointer = 0;
+                    playNote();
+                }
+
+                documentBody.appendChild(playButton);
+
+                function render (keyNote, keyBlackNote) {
+                    canvasElement.width = 1470;
+                    canvasElement.height = 400;
+
+                    for (i=0; i < 21; i++) {
+                        ctx.strokeRect(noteWidth * i, 0, noteWidth, 400 - (keyNote == i ? 20 : 0));
+                        notesMiddle[i] && ctx.fillRect(noteWidth * i - 20, 0, 40, middleFrequency
+                        - (keyBlackNote == i ? 20 : 0));
+                    }
+                }
+
+                render();
+
+                function playNote(e) {
+                    noteWPoint = noteBPoint = -1;
+
+                    if(!e) {
+                        eliseTmp = "*;*;*.)(-!#-.#>.(#*;*;*.)(-(*-.*(.-.()*,+*)$*)(#)(.#**1;*;*.(-".
+                        charCodeAt(elisePointer);
+                    noteToPlay = eliseTmp > 50 ? notesMiddle[noteBPoint = eliseTmp - 50] : 
+                                notesWhite[noteWPoint = eliseTmp - 33];
+                    } else {
+                        clearTimeout(eliseTimeout);
+                        xpos = e.offsetX;
+
+                        if (e.offsetY < middleCFrequency) {
+                            for (i=21; i-; ) {
+                                if (xpos > (i * noteWidth - 20) && xpos < (i * noteWidth + 20)
+                                    && notesMiddle[i]) {
+                                        noteToPlay = notesMiddle[noteBPoint = i];
+                                    }
+                            }
+                        } else {
+                            noteToPlay = notesWhite[noteWPoint = 0 | (xpos / noteWidth)];
+                        }
+                    }
+
+                    render(noteWPoint, noteBPoint);
+
+                    if (!player[noteBPoint]) {
+                        header = "RIFF" + fromCharCode(12,69,0,0) + "WAVEfmt " +
+                            fromCharCode(16,0,0,0,1,0,1,0,68,172,0,0,136,88,1,0,2,0,16,0)
+                            + "data" + fromCharCode(232,68,0,0);
+
+                            for (i = 8820; i--; ) {
+                                note = Math.sin(6.28 * i / (44100 / noteToPlay)) * 32767;
+                                note += note < 0 ? 65536 : 0;
+                                header += fromCharCode(note % middleCFrequency, 0 | (note / middleCFrequency));
+                            }
+
+                            player[noteToPlay] = new Audio('data: audio/wav;base64' + btoa(header));
+                    }
+                            player[noteToPlay].play();
+
+                            setTimeoutFunc (render, 300);
+
+                            if (!e && elisePointer++ != 62)
+                                eliseTimeout = setTimeoutFunc(playNote, 300);
+                    }
+            })(ctx, documentBody, canvasElement);
         </script>
 </body>
 </html>
